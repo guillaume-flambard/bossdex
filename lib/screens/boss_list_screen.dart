@@ -45,7 +45,7 @@ class _BossListScreenState extends State<BossListScreen> {
     final sectors = sampleBosses.map((e) => e.sector).toSet().toList();
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -54,11 +54,11 @@ class _BossListScreenState extends State<BossListScreen> {
           child: Material(
             color: Colors.transparent,
             child: Text(
-              "Les Boss du Business 💼",
+              "Les Boss du Business",
               style: GoogleFonts.poppins(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
           ),
@@ -66,7 +66,12 @@ class _BossListScreenState extends State<BossListScreen> {
         actions: [
           Row(
             children: [
-              const Text('Favoris'),
+              Text(
+                'Favoris',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
+              ),
               Switch(
                 value: showOnlyFavorites,
                 onChanged: (value) => setState(() => showOnlyFavorites = value),
@@ -86,12 +91,21 @@ class _BossListScreenState extends State<BossListScreen> {
                   onChanged: (value) => setState(() => searchQuery = value),
                   decoration: InputDecoration(
                     hintText: 'Rechercher un boss...',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).cardColor,
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -145,7 +159,7 @@ class _BossListScreenState extends State<BossListScreen> {
                           child: Container(
                             margin: const EdgeInsets.symmetric(vertical: 8),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(15),
                               boxShadow: [
                                 BoxShadow(
@@ -205,7 +219,7 @@ class _BossListScreenState extends State<BossListScreen> {
                                               style: GoogleFonts.poppins(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.black87,
+                                                color: Theme.of(context).colorScheme.onSurface,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -219,14 +233,14 @@ class _BossListScreenState extends State<BossListScreen> {
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: Colors.blue.withOpacity(0.1),
+                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                             borderRadius: BorderRadius.circular(6),
                                           ),
                                           child: Text(
                                             boss.sector,
                                             style: GoogleFonts.poppins(
                                               fontSize: 14,
-                                              color: Colors.blue[700],
+                                              color: Theme.of(context).colorScheme.primary,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
@@ -237,13 +251,13 @@ class _BossListScreenState extends State<BossListScreen> {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.blue.withOpacity(0.1),
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Icons.arrow_forward_ios,
                                       size: 16,
-                                      color: Colors.blue[700],
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 ],

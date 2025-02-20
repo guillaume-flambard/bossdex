@@ -3,8 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'screens/home_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'services/notification_service.dart';
+import 'services/preferences_service.dart';
+import 'models/user_preferences.dart';
+import 'theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import 'providers/theme_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -17,21 +24,38 @@ void main() {
 class BossDexApp extends StatelessWidget {
   const BossDexApp({super.key});
 
+  Future<UserPreferences> _initializeApp() async {
+    await NotificationService.initialize();
+    return PreferencesService.getPreferences();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'BossDex',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2563EB),
-          brightness: Brightness.light,
-        ),
-        textTheme: GoogleFonts.poppinsTextTheme(),
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: const HomeScreen(),
+    return FutureBuilder<UserPreferences>(
+      future: _initializeApp(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
+
+        return ChangeNotifierProvider(
+          create: (_) => ThemeProvider(snapshot.data!),
+          child: Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) => MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'BossDex',
+              theme: themeProvider.isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme,
+              home: const WelcomeScreen(),
+            ),
+          ),
+        );
+      },
     );
   }
 }

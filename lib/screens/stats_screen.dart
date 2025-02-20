@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/boss.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class StatsScreen extends StatelessWidget {
@@ -12,45 +11,77 @@ class StatsScreen extends StatelessWidget {
     final stats = _calculateStats();
     
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 'Statistiques',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.secondary,
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[900]!
+                          : Theme.of(context).colorScheme.primary,
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[800]!
+                          : Theme.of(context).colorScheme.secondary,
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[700]!
+                          : Theme.of(context).colorScheme.tertiary,
                     ],
+                    stops: const [0.0, 0.6, 1.0],
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
                   children: [
-                    Text(
-                      '${stats.totalBosses}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Positioned.fill(
+                      child: Opacity(
+                        opacity: 0.1,
+                        child: CustomPaint(
+                          painter: GridPainter(),
+                        ),
                       ),
                     ),
-                    Text(
-                      'Boss au total',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 40),
+                          Text(
+                            '${stats.totalBosses}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 48,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'Boss au total',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -68,7 +99,7 @@ class StatsScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 _buildSectionTitle('Faits intéressants'),
                 const SizedBox(height: 16),
-                _buildFactsGrid(stats),
+                _buildFactsGrid(stats, context),
               ]),
             ),
           ),
@@ -101,6 +132,7 @@ class StatsScreen extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Card(
+                color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -152,7 +184,7 @@ class StatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFactsGrid(StatsData stats) {
+  Widget _buildFactsGrid(StatsData stats, BuildContext context) {
     final facts = [
       {
         'title': 'Secteurs',
@@ -182,12 +214,13 @@ class StatsScreen extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
-      children: facts.map((fact) => _buildFactCard(fact)).toList(),
+      children: facts.map((fact) => _buildFactCard(fact, context)).toList(),
     );
   }
 
-  Widget _buildFactCard(Map<String, dynamic> fact) {
+  Widget _buildFactCard(Map<String, dynamic> fact, BuildContext context) {
     return Card(
+      color: Theme.of(context).cardColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -253,4 +286,35 @@ class StatsData {
     required this.mainSector,
     required this.favoritesCount,
   });
+}
+
+// Ajoutez cette classe pour le motif de fond
+class GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1;
+
+    const spacing = 20.0;
+    
+    for (var i = 0; i < size.width.toInt(); i += spacing.toInt()) {
+      canvas.drawLine(
+        Offset(i.toDouble(), 0),
+        Offset(i.toDouble(), size.height),
+        paint,
+      );
+    }
+    
+    for (var i = 0; i < size.height.toInt(); i += spacing.toInt()) {
+      canvas.drawLine(
+        Offset(0, i.toDouble()),
+        Offset(size.width, i.toDouble()),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 } 
